@@ -26,6 +26,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
+    // 서비스에서 발생시킨 비즈니스 예외를 지정된 HTTP 응답으로 바꿉니다.
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<Object> handleBusinessException(
             BusinessException exception,
@@ -37,6 +38,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponse(exception, errorCode, null, HttpHeaders.EMPTY, request);
     }
 
+    // 요청 DTO 검증에 실패한 필드를 이름과 메시지 형태로 정리합니다.
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException exception,
@@ -51,6 +53,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponse(exception, CommonErrorCode.BAD_REQUEST, fieldErrors, headers, request);
     }
 
+    // JSON 문법이나 값의 타입이 잘못된 요청을 400 응답으로 처리합니다.
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException exception,
@@ -63,6 +66,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponse(exception, CommonErrorCode.BAD_REQUEST, null, headers, request);
     }
 
+    // 등록되지 않은 API 경로를 공통 404 응답으로 처리합니다.
     @Override
     protected ResponseEntity<Object> handleNoResourceFoundException(
             NoResourceFoundException exception,
@@ -75,6 +79,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildResponse(exception, CommonErrorCode.NOT_FOUND, null, headers, request);
     }
 
+    // 따로 처리하지 않은 예외는 내부 내용을 숨기고 500 응답으로 반환합니다.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleUnexpectedException(Exception exception, WebRequest request) {
         log.error("Unexpected server error", exception);
@@ -88,6 +93,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    // 에러 코드와 부가 정보를 공통 응답 형식으로 조립합니다.
     private ResponseEntity<Object> buildResponse(
             Exception exception,
             ErrorCode errorCode,

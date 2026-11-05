@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/core")
 public class HealthController {
 
+	// 서비스 이름과 현재 서버 시간을 반환합니다.
 	@GetMapping("/health")
 	public HealthResponse health() {
 		return new HealthResponse(
