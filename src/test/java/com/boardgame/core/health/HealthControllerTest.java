@@ -7,9 +7,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.boardgame.core.global.response.GlobalResponseAdvice;
+
 @WebMvcTest(HealthController.class)
+@Import(GlobalResponseAdvice.class)
 class HealthControllerTest {
 
 	@Autowired
@@ -19,8 +23,10 @@ class HealthControllerTest {
 	void returnsServiceHealth() throws Exception {
 		mockMvc.perform(get("/api/core/health"))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.service").value("boardgame-core"))
-				.andExpect(jsonPath("$.status").value("UP"));
+				.andExpect(jsonPath("$.success").value(true))
+				.andExpect(jsonPath("$.code").value("COMMON-200"))
+				.andExpect(jsonPath("$.result.service").value("boardgame-core"))
+				.andExpect(jsonPath("$.result.status").value("UP"));
 	}
 }
 
