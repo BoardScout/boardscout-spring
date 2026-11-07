@@ -97,6 +97,7 @@ public class BoardGame {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
+	// 직접 등록과 데이터셋 등록이 공유하는 값 검증과 필드 초기화를 수행합니다.
 	private BoardGame(User createdBy, Integer datasetItemId, Long bggId, String name, String description,
 		String category, int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes,
 		Integer minAge, Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating,
@@ -140,6 +141,7 @@ public class BoardGame {
 		this.mechanics = copyLabels(mechanics, "mechanics");
 	}
 
+	// 사용자가 직접 등록한 보드게임을 데이터셋 식별자 없이 생성합니다.
 	public static BoardGame create(User createdBy, String name, String description, String category,
 		int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes, Integer minAge,
 		Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating, Set<String> categories,
@@ -149,6 +151,7 @@ public class BoardGame {
 			categories, mechanics);
 	}
 
+	// 추천 데이터셋의 내부 ID와 BGG ID를 보존한 보드게임을 생성합니다.
 	public static BoardGame fromDataset(Integer datasetItemId, Long bggId, String name, String description,
 		String category, int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes,
 		Integer minAge, Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating,
@@ -161,14 +164,17 @@ public class BoardGame {
 			categories, mechanics);
 	}
 
+	// 영속 컬렉션이 외부에서 직접 변경되지 않도록 읽기 전용 뷰를 반환합니다.
 	public Set<String> getCategories() {
 		return Collections.unmodifiableSet(categories);
 	}
 
+	// 영속 컬렉션이 외부에서 직접 변경되지 않도록 읽기 전용 뷰를 반환합니다.
 	public Set<String> getMechanics() {
 		return Collections.unmodifiableSet(mechanics);
 	}
 
+	// 필수 문자열의 공백 여부와 데이터베이스 컬럼 길이를 함께 검증합니다.
 	private static String requireText(String value, String field, int maxLength) {
 		if (value == null || value.isBlank() || value.length() > maxLength) {
 			throw new IllegalArgumentException(field + " must contain 1 to " + maxLength + " characters");
@@ -176,6 +182,7 @@ public class BoardGame {
 		return value;
 	}
 
+	// 선택 숫자 값이 지정된 도메인 범위 안에 있는지 확인합니다.
 	private static void requireRange(BigDecimal value, String field, int min, int max) {
 		if (value != null && (value.compareTo(BigDecimal.valueOf(min)) < 0
 			|| value.compareTo(BigDecimal.valueOf(max)) > 0)) {
@@ -183,6 +190,7 @@ public class BoardGame {
 		}
 	}
 
+	// 입력 라벨을 검증해 엔티티가 소유하는 새 컬렉션으로 복사합니다.
 	private static Set<String> copyLabels(Set<String> labels, String field) {
 		Set<String> copy = new LinkedHashSet<>();
 		if (labels != null) {
