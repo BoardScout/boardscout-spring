@@ -1,19 +1,195 @@
 package com.boardgame.core.domain.boardgame.entity;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import com.boardgame.core.domain.user.entity.User;
+
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "board_games")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class BoardGame {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "created_by")
+	private User createdBy;
+
+	@Column(name = "dataset_item_id", unique = true)
+	private Integer datasetItemId;
+
+	@Column(name = "bgg_id", unique = true)
+	private Long bggId;
+
+	@Column(nullable = false, length = 100)
+	private String name;
+
+	@Column(columnDefinition = "TEXT")
+	private String description;
+
+	@Column(nullable = false, length = 50)
+	private String category;
+
+	@Column(name = "min_players", nullable = false)
+	private int minPlayers;
+
+	@Column(name = "max_players", nullable = false)
+	private int maxPlayers;
+
+	@Column(name = "min_play_time_minutes", nullable = false)
+	private int minPlayTimeMinutes;
+
+	@Column(name = "max_play_time_minutes", nullable = false)
+	private int maxPlayTimeMinutes;
+
+	@Column(name = "min_age")
+	private Integer minAge;
+
+	@Column(name = "year_published")
+	private Integer yearPublished;
+
+	@Column(precision = 5, scale = 4)
+	private BigDecimal difficulty;
+
+	@Column(precision = 7, scale = 5)
+	private BigDecimal averageRating;
+
+	@ElementCollection
+	@CollectionTable(name = "board_game_categories", joinColumns = @JoinColumn(name = "board_game_id"))
+	@Column(name = "category", nullable = false, length = 100)
+	private Set<String> categories = new LinkedHashSet<>();
+
+	@ElementCollection
+	@CollectionTable(name = "board_game_mechanics", joinColumns = @JoinColumn(name = "board_game_id"))
+	@Column(name = "mechanic", nullable = false, length = 100)
+	private Set<String> mechanics = new LinkedHashSet<>();
+
+	@CreationTimestamp
+	@Column(name = "created_at", nullable = false, updatable = false)
+	private LocalDateTime createdAt;
+
+	@UpdateTimestamp
+	@Column(name = "updated_at", nullable = false)
+	private LocalDateTime updatedAt;
+
+	private BoardGame(User createdBy, Integer datasetItemId, Long bggId, String name, String description,
+		String category, int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes,
+		Integer minAge, Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating,
+		Set<String> categories, Set<String> mechanics) {
+		this.name = requireText(name, "name", 100);
+		this.category = requireText(category, "category", 50);
+		if (datasetItemId != null && datasetItemId < 0) {
+			throw new IllegalArgumentException("datasetItemId must be nonnegative");
+		}
+		if (bggId != null && bggId <= 0) {
+			throw new IllegalArgumentException("bggId must be positive");
+		}
+		if (minPlayers < 0 || maxPlayers < 0 || (maxPlayers != 0 && maxPlayers < minPlayers)) {
+			throw new IllegalArgumentException(
+				"player counts must be nonnegative and ordered unless maxPlayers is unknown");
+		}
+		if (minPlayTimeMinutes < 0 || maxPlayTimeMinutes < minPlayTimeMinutes) {
+			throw new IllegalArgumentException("play times must be nonnegative and ordered");
+		}
+		if (minAge != null && minAge < 0) {
+			throw new IllegalArgumentException("minAge must be nonnegative");
+		}
+		if (yearPublished != null && yearPublished < -3000) {
+			throw new IllegalArgumentException("yearPublished must be at least -3000");
+		}
+		requireRange(difficulty, "difficulty", 1, 5);
+		requireRange(averageRating, "averageRating", 0, 10);
+		this.createdBy = createdBy;
+		this.datasetItemId = datasetItemId;
+		this.bggId = bggId;
+		this.description = description;
+		this.minPlayers = minPlayers;
+		this.maxPlayers = maxPlayers;
+		this.minPlayTimeMinutes = minPlayTimeMinutes;
+		this.maxPlayTimeMinutes = maxPlayTimeMinutes;
+		this.minAge = minAge;
+		this.yearPublished = yearPublished;
+		this.difficulty = difficulty;
+		this.averageRating = averageRating;
+		this.categories = copyLabels(categories, "categories");
+		this.mechanics = copyLabels(mechanics, "mechanics");
+	}
+
+	public static BoardGame create(User createdBy, String name, String description, String category,
+		int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes, Integer minAge,
+		Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating, Set<String> categories,
+		Set<String> mechanics) {
+		return new BoardGame(createdBy, null, null, name, description, category, minPlayers, maxPlayers,
+			minPlayTimeMinutes, maxPlayTimeMinutes, minAge, yearPublished, difficulty, averageRating,
+			categories, mechanics);
+	}
+
+	public static BoardGame fromDataset(Integer datasetItemId, Long bggId, String name, String description,
+		String category, int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes,
+		Integer minAge, Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating,
+		Set<String> categories, Set<String> mechanics) {
+		if (datasetItemId == null || bggId == null) {
+			throw new IllegalArgumentException("datasetItemId and bggId are required for dataset games");
+		}
+		return new BoardGame(null, datasetItemId, bggId, name, description, category, minPlayers, maxPlayers,
+			minPlayTimeMinutes, maxPlayTimeMinutes, minAge, yearPublished, difficulty, averageRating,
+			categories, mechanics);
+	}
+
+	public Set<String> getCategories() {
+		return Collections.unmodifiableSet(categories);
+	}
+
+	public Set<String> getMechanics() {
+		return Collections.unmodifiableSet(mechanics);
+	}
+
+	private static String requireText(String value, String field, int maxLength) {
+		if (value == null || value.isBlank() || value.length() > maxLength) {
+			throw new IllegalArgumentException(field + " must contain 1 to " + maxLength + " characters");
+		}
+		return value;
+	}
+
+	private static void requireRange(BigDecimal value, String field, int min, int max) {
+		if (value != null && (value.compareTo(BigDecimal.valueOf(min)) < 0
+			|| value.compareTo(BigDecimal.valueOf(max)) > 0)) {
+			throw new IllegalArgumentException(field + " must be between " + min + " and " + max);
+		}
+	}
+
+	private static Set<String> copyLabels(Set<String> labels, String field) {
+		Set<String> copy = new LinkedHashSet<>();
+		if (labels != null) {
+			for (String label : labels) {
+				copy.add(requireText(label, field, 100));
+			}
+		}
+		return copy;
+	}
 }
