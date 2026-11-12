@@ -11,6 +11,7 @@ import jakarta.validation.constraints.NotBlank;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -26,6 +27,7 @@ import com.boardgame.core.global.exception.GlobalExceptionHandler;
 import com.boardgame.core.global.response.GlobalResponseAdvice;
 
 @WebMvcTest(GlobalTestController.class)
+@AutoConfigureMockMvc(addFilters = false)
 @Import({GlobalResponseAdvice.class, GlobalExceptionHandler.class})
 class GlobalApiHandlingTest {
 

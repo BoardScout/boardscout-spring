@@ -27,3 +27,9 @@ management:
     health:
       show-details: when-authorized
 
+app:
+  session:
+    cookie-name: ${SESSION_COOKIE_NAME:BGSESSION}
+    ttl: ${SESSION_TTL:30m}
+    secure-cookie: ${SESSION_COOKIE_SECURE:false}
+

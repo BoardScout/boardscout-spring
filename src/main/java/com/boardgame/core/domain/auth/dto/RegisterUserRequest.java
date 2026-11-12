@@ -1,4 +1,4 @@
-package com.boardgame.core.domain.user.dto;
+package com.boardgame.core.domain.auth.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.AssertTrue;
