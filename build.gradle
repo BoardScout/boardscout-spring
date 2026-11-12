@@ -41,5 +41,18 @@ dependencies {
 }
 
 tasks.named('test') {
-	useJUnitPlatform()
+	useJUnitPlatform {
+		excludeTags 'mysql'
+	}
+}
+
+tasks.register('mysqlTest', Test) {
+	description = 'Runs integration tests against the Dockerized MySQL instance.'
+	group = 'verification'
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+	useJUnitPlatform {
+		includeTags 'mysql'
+	}
+	shouldRunAfter tasks.named('test')
 }
