@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.boardgame.core.domain.auth.session.RedisSessionService;
-import com.boardgame.core.domain.auth.session.SessionProperties;
+import com.boardgame.core.global.config.AuthSessionProperties;
 import jakarta.servlet.http.Cookie;
 import java.time.Duration;
 import java.util.Optional;
@@ -37,7 +37,7 @@ class RedisSessionAuthenticationFilterTest {
 		given(redisSessionService.findAndRefresh(SESSION_ID)).willReturn(Optional.of(principal));
 		RedisSessionAuthenticationFilter filter = new RedisSessionAuthenticationFilter(
 			redisSessionService,
-			new SessionProperties("BGSESSION", Duration.ofMinutes(30), false));
+			new AuthSessionProperties("BGSESSION", Duration.ofMinutes(30), false));
 		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/core/users/me");
 		request.setCookies(new Cookie("BGSESSION", SESSION_ID));
 

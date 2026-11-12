@@ -1,4 +1,4 @@
-package com.boardgame.core.domain.auth.security;
+package com.boardgame.core.global.config;
 
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -6,7 +6,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.boardgame.core.domain.auth.session.RedisSessionService;
-import com.boardgame.core.domain.auth.session.SessionProperties;
 import com.boardgame.core.health.HealthController;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +26,7 @@ class SecurityConfigTest {
 	private RedisSessionService redisSessionService;
 
 	@MockitoBean
-	private SessionProperties sessionProperties;
+	private AuthSessionProperties sessionProperties;
 
 	@BeforeEach
 	void setUp() {

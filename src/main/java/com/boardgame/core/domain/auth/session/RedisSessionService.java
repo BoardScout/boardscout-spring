@@ -8,6 +8,7 @@ import java.util.Optional;
 
 import com.boardgame.core.domain.auth.security.SessionPrincipal;
 import com.boardgame.core.domain.user.entity.User;
+import com.boardgame.core.global.config.AuthSessionProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ public class RedisSessionService {
 
 	private final StringRedisTemplate redisTemplate;
 	private final ObjectMapper objectMapper;
-	private final SessionProperties properties;
+	private final AuthSessionProperties properties;
 	private final SecureRandom secureRandom = new SecureRandom();
 
 	public String create(User user) {

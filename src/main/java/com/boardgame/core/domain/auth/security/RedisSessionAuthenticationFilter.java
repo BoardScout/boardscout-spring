@@ -1,7 +1,7 @@
 package com.boardgame.core.domain.auth.security;
 
 import com.boardgame.core.domain.auth.session.RedisSessionService;
-import com.boardgame.core.domain.auth.session.SessionProperties;
+import com.boardgame.core.global.config.AuthSessionProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -21,7 +21,7 @@ import org.springframework.web.util.WebUtils;
 public class RedisSessionAuthenticationFilter extends OncePerRequestFilter {
 
 	private final RedisSessionService redisSessionService;
-	private final SessionProperties sessionProperties;
+	private final AuthSessionProperties sessionProperties;
 
 	@Override
 	protected void doFilterInternal(

@@ -6,6 +6,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 import com.boardgame.core.domain.user.entity.User;
+import com.boardgame.core.global.config.AuthSessionProperties;
 import java.time.Duration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,7 @@ class RedisSessionServiceTest {
 	@BeforeEach
 	void setUp() {
 		given(redisTemplate.opsForValue()).willReturn(valueOperations);
-		SessionProperties properties = new SessionProperties("BGSESSION", Duration.ofMinutes(30), false);
+		AuthSessionProperties properties = new AuthSessionProperties("BGSESSION", Duration.ofMinutes(30), false);
 		redisSessionService = new RedisSessionService(redisTemplate, new ObjectMapper(), properties);
 	}
 

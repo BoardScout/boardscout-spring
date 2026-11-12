@@ -1,5 +1,6 @@
 package com.boardgame.core.domain.auth.session;
 
+import com.boardgame.core.global.config.AuthSessionProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Component;
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SessionCookieFactory {
 
-	private final SessionProperties properties;
+	private final AuthSessionProperties properties;
 
 	public ResponseCookie create(String sessionId) {
 		return ResponseCookie.from(properties.cookieName(), sessionId)

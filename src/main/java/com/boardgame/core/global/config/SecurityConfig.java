@@ -1,11 +1,12 @@
-package com.boardgame.core.domain.auth.security;
+package com.boardgame.core.global.config;
 
+import com.boardgame.core.domain.auth.security.RedisSessionAuthenticationFilter;
 import com.boardgame.core.domain.auth.session.RedisSessionService;
-import com.boardgame.core.domain.auth.session.SessionProperties;
 import com.boardgame.core.global.exception.CommonErrorCode;
 import com.boardgame.core.global.response.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -18,6 +19,7 @@ import tools.jackson.databind.ObjectMapper;
 
 @Configuration
 @RequiredArgsConstructor
+@EnableConfigurationProperties(AuthSessionProperties.class)
 public class SecurityConfig {
 
 	private final ObjectMapper objectMapper;
@@ -25,7 +27,7 @@ public class SecurityConfig {
 	@Bean
 	RedisSessionAuthenticationFilter redisSessionAuthenticationFilter(
 		RedisSessionService redisSessionService,
-		SessionProperties sessionProperties
+		AuthSessionProperties sessionProperties
 	) {
 		return new RedisSessionAuthenticationFilter(redisSessionService, sessionProperties);
 	}
