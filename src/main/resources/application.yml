@@ -1,20 +1,15 @@
 spring:
   application:
     name: boardgame-core
-  datasource:
-    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:boardgame}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: ${MYSQL_USER:boardgame}
-    password: ${MYSQL_PASSWORD:boardgame}
+  profiles:
+    default: local
   jpa:
     hibernate:
       ddl-auto: validate
     open-in-view: false
   flyway:
     enabled: true
-  data:
-    redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+
 server:
   port: ${SERVER_PORT:8080}
 
@@ -31,5 +26,4 @@ app:
   session:
     cookie-name: ${SESSION_COOKIE_NAME:BGSESSION}
     ttl: ${SESSION_TTL:30m}
-    secure-cookie: ${SESSION_COOKIE_SECURE:false}
 

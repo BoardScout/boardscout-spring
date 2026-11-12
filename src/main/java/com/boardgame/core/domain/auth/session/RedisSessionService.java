@@ -14,6 +14,10 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import tools.jackson.databind.ObjectMapper;
 
+/**
+ * Spring과 FastAPI가 함께 읽는 Redis JSON 세션의 생성·조회·TTL 갱신을 담당합니다.
+ * Redis 키는 session:{sessionId}, 값은 언어에 종속되지 않는 JSON 형식을 사용합니다.
+ */
 @Service
 @RequiredArgsConstructor
 public class RedisSessionService {
@@ -27,6 +31,7 @@ public class RedisSessionService {
 	private final SecureRandom secureRandom = new SecureRandom();
 
 	public String create(User user) {
+		// 로그인할 때마다 예측하기 어려운 새 ID를 만들어 기존 쿠키 값과 분리합니다.
 		String sessionId = generateSessionId();
 		SessionData payload = new SessionData(
 			user.getId(),
@@ -36,11 +41,13 @@ public class RedisSessionService {
 			OffsetDateTime.now(ZoneOffset.UTC).toString());
 		String json = objectMapper.writeValueAsString(payload);
 
+		// JSON 저장과 동시에 TTL을 설정해 로그아웃하지 않은 세션도 자동 만료되게 합니다.
 		redisTemplate.opsForValue().set(SESSION_KEY_PREFIX + sessionId, json, properties.ttl());
 		return sessionId;
 	}
 
 	public Optional<SessionPrincipal> findAndRefresh(String sessionId) {
+		// 쿠키 입력을 먼저 제한해 임의 문자열로 Redis 키를 조회하지 않도록 합니다.
 		if (sessionId == null || !sessionId.matches("[A-Za-z0-9_-]{43}")) {
 			return Optional.empty();
 		}
@@ -53,10 +60,12 @@ public class RedisSessionService {
 
 		try {
 			SessionData data = objectMapper.readValue(json, SessionData.class);
+			// 인증에 성공한 요청은 Redis 만료 시간을 다시 늘리는 슬라이딩 TTL을 적용합니다.
 			redisTemplate.expire(key, properties.ttl());
 			return Optional.of(new SessionPrincipal(
 				data.userId(), data.email(), data.nickname(), data.role()));
 		} catch (RuntimeException exception) {
+			// 계약과 다른 손상된 JSON은 인증에 사용하지 않고 즉시 제거합니다.
 			redisTemplate.delete(key);
 			return Optional.empty();
 		}

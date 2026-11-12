@@ -17,6 +17,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.WebUtils;
 
+/**
+ * 로그인 이후 요청의 BGSESSION 쿠키를 Redis 세션과 대조하는 Spring Security 인증 필터입니다.
+ * 유효한 세션이면 현재 요청에만 사용할 SecurityContext를 만들고 다음 필터로 넘깁니다.
+ */
 @RequiredArgsConstructor
 public class RedisSessionAuthenticationFilter extends OncePerRequestFilter {
 
@@ -29,6 +33,7 @@ public class RedisSessionAuthenticationFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain
 	) throws ServletException, IOException {
+		// 앞선 인증 수단이 없는 요청만 쿠키 기반 인증을 시도합니다.
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
 			Cookie cookie = WebUtils.getCookie(request, sessionProperties.cookieName());
 			if (cookie != null) {
@@ -40,6 +45,7 @@ public class RedisSessionAuthenticationFilter extends OncePerRequestFilter {
 	}
 
 	private void authenticate(SessionPrincipal principal) {
+		// Redis에 저장된 역할을 Spring Security 권한 규칙(ROLE_*)으로 변환합니다.
 		var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + principal.role()));
 		var authentication = UsernamePasswordAuthenticationToken.authenticated(principal, null, authorities);
 		SecurityContext context = SecurityContextHolder.createEmptyContext();

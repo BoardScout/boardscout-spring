@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:boardgame}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${MYSQL_USER:boardgame}
+    password: ${MYSQL_PASSWORD:boardgame}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+management:
+  endpoint:
+    health:
+      show-details: always
+
+app:
+  session:
+    secure-cookie: false

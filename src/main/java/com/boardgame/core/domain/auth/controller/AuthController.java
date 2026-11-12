@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 인증 HTTP 요청의 입구입니다.
+ * 입력 검증과 응답 쿠키 처리를 담당하고 실제 계정·세션 로직은 AuthService에 위임합니다.
+ */
 @RestController
 @RequestMapping("/api/core/auth")
 @RequiredArgsConstructor
@@ -28,12 +32,15 @@ public class AuthController {
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserResponse register(@Valid @RequestBody RegisterUserRequest request) {
+		// DTO 검증을 통과한 가입 정보를 정규화·암호화·저장하는 서비스로 전달합니다.
 		return authService.register(request);
 	}
 
 	@PostMapping("/login")
 	public UserResponse login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
+		// 자격 증명이 맞으면 서비스가 Redis 세션을 만들고 새 sessionId를 반환합니다.
 		LoginResult result = authService.login(request);
+		// 브라우저는 응답의 HttpOnly 쿠키를 저장했다가 이후 요청에 자동으로 전송합니다.
 		response.addHeader(HttpHeaders.SET_COOKIE, sessionCookieFactory.create(result.sessionId()).toString());
 		return result.user();
 	}
