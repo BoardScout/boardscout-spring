@@ -46,11 +46,20 @@ public class BoardGame {
 	@Column(name = "bgg_id", unique = true)
 	private Long bggId;
 
-	@Column(nullable = false, length = 100)
+	@Column(name = "name_en", nullable = false, length = 100)
 	private String name;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(name = "name_ko", length = 100)
+	private String nameKo;
+
+	@Column(name = "description_ko", columnDefinition = "TEXT")
 	private String description;
+
+	@Column(name = "image_url", length = 2048)
+	private String imageUrl;
+
+	@Column(name = "thumbnail_url", length = 2048)
+	private String thumbnailUrl;
 
 	@Column(nullable = false, length = 50)
 	private String category;
@@ -101,8 +110,9 @@ public class BoardGame {
 	private BoardGame(User createdBy, Integer datasetItemId, Long bggId, String name, String description,
 		String category, int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes,
 		Integer minAge, Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating,
-		Set<String> categories, Set<String> mechanics) {
+		Set<String> categories, Set<String> mechanics, String nameKo, String imageUrl, String thumbnailUrl) {
 		this.name = requireText(name, "name", 100);
+		this.nameKo = optionalText(nameKo, "nameKo", 100);
 		this.category = requireText(category, "category", 50);
 		if (datasetItemId != null && datasetItemId < 0) {
 			throw new IllegalArgumentException("datasetItemId must be nonnegative");
@@ -129,6 +139,8 @@ public class BoardGame {
 		this.datasetItemId = datasetItemId;
 		this.bggId = bggId;
 		this.description = description;
+		this.imageUrl = optionalText(imageUrl, "imageUrl", 2048);
+		this.thumbnailUrl = optionalText(thumbnailUrl, "thumbnailUrl", 2048);
 		this.minPlayers = minPlayers;
 		this.maxPlayers = maxPlayers;
 		this.minPlayTimeMinutes = minPlayTimeMinutes;
@@ -148,7 +160,7 @@ public class BoardGame {
 		Set<String> mechanics) {
 		return new BoardGame(createdBy, null, null, name, description, category, minPlayers, maxPlayers,
 			minPlayTimeMinutes, maxPlayTimeMinutes, minAge, yearPublished, difficulty, averageRating,
-			categories, mechanics);
+			categories, mechanics, null, null, null);
 	}
 
 	// 추천 데이터셋의 내부 ID와 BGG ID를 보존한 보드게임을 생성합니다.
@@ -161,7 +173,21 @@ public class BoardGame {
 		}
 		return new BoardGame(null, datasetItemId, bggId, name, description, category, minPlayers, maxPlayers,
 			minPlayTimeMinutes, maxPlayTimeMinutes, minAge, yearPublished, difficulty, averageRating,
-			categories, mechanics);
+			categories, mechanics, null, null, null);
+	}
+
+	// API나 검수된 데이터에서 확보한 한국어 이름과 이미지 주소를 함께 보존합니다.
+	public static BoardGame fromLocalizedDataset(Integer datasetItemId, Long bggId, String name,
+		String nameKo, String description, String imageUrl, String thumbnailUrl, String category,
+		int minPlayers, int maxPlayers, int minPlayTimeMinutes, int maxPlayTimeMinutes, Integer minAge,
+		Integer yearPublished, BigDecimal difficulty, BigDecimal averageRating, Set<String> categories,
+		Set<String> mechanics) {
+		if (datasetItemId == null || bggId == null) {
+			throw new IllegalArgumentException("datasetItemId and bggId are required for dataset games");
+		}
+		return new BoardGame(null, datasetItemId, bggId, name, description, category, minPlayers, maxPlayers,
+			minPlayTimeMinutes, maxPlayTimeMinutes, minAge, yearPublished, difficulty, averageRating,
+			categories, mechanics, nameKo, imageUrl, thumbnailUrl);
 	}
 
 	// 영속 컬렉션이 외부에서 직접 변경되지 않도록 읽기 전용 뷰를 반환합니다.
@@ -180,6 +206,13 @@ public class BoardGame {
 			throw new IllegalArgumentException(field + " must contain 1 to " + maxLength + " characters");
 		}
 		return value;
+	}
+
+	private static String optionalText(String value, String field, int maxLength) {
+		if (value == null) {
+			return null;
+		}
+		return requireText(value, field, maxLength);
 	}
 
 	// 선택 숫자 값이 지정된 도메인 범위 안에 있는지 확인합니다.

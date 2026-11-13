@@ -50,6 +50,20 @@ class BoardGameTest {
 	}
 
 	@Test
+	void localizedDatasetPreservesKoreanNameAndImageUrls() {
+		BoardGame game = BoardGame.fromLocalizedDataset(0, 30549L, "Pandemic", "팬데믹",
+			"세계의 감염을 막는 협력 게임", "https://example.com/image.jpg",
+			"https://example.com/thumbnail.jpg", "Medical", 2, 4, 45, 45, 8, 2008,
+			new BigDecimal("2.4063"), new BigDecimal("7.58896"), Set.of("Medical"), Set.of("Cooperative"));
+
+		assertEquals("Pandemic", game.getName());
+		assertEquals("팬데믹", game.getNameKo());
+		assertEquals("세계의 감염을 막는 협력 게임", game.getDescription());
+		assertEquals("https://example.com/image.jpg", game.getImageUrl());
+		assertEquals("https://example.com/thumbnail.jpg", game.getThumbnailUrl());
+	}
+
+	@Test
 	void datasetGameAllowsUnknownMaximumPlayerCount() {
 		BoardGame game = dataset(1038, 1540L, 2, 0, 60, 60, 14, 1985,
 			new BigDecimal("4.0000"), new BigDecimal("6.68000"));

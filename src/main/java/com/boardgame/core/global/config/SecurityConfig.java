@@ -10,6 +10,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -60,6 +61,7 @@ public class SecurityConfig {
 			// 인증 진입점과 상태 확인은 공개하고, 나머지 core API는 유효한 세션이 있어야 통과시킵니다.
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/api/core/auth/**", "/api/core/health", "/actuator/health").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/core/board-games/**").permitAll()
 				.requestMatchers("/api/core/**").authenticated()
 				.anyRequest().permitAll())
 			// 인증되지 않은 보호 API 요청도 나머지 API와 같은 공통 오류 형식으로 반환합니다.
