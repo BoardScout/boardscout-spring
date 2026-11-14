@@ -33,12 +33,13 @@ class RedisSessionAuthenticationFilterTest {
 
 	@Test
 	void authenticatesRequestFromSharedSessionCookie() throws Exception {
-		SessionPrincipal principal = new SessionPrincipal(1L, "player@example.com", "플레이어", "USER");
+		SessionPrincipal principal = new SessionPrincipal(
+			SESSION_ID, 1L, "player@example.com", "플레이어", "USER");
 		given(redisSessionService.findAndRefresh(SESSION_ID)).willReturn(Optional.of(principal));
 		RedisSessionAuthenticationFilter filter = new RedisSessionAuthenticationFilter(
 			redisSessionService,
 			new AuthSessionProperties("BGSESSION", Duration.ofMinutes(30), false));
-		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/core/users/me");
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/api/v1/users/me");
 		request.setCookies(new Cookie("BGSESSION", SESSION_ID));
 
 		filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());

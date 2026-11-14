@@ -57,4 +57,13 @@ class UserTest {
 		assertThatIllegalArgumentException()
 			.isThrownBy(() -> User.create("user@example.com", "hashed-password", "a".repeat(51)));
 	}
+
+	@Test
+	void updatesNickname() {
+		User user = User.create("user@example.com", "hashed-password", "before");
+
+		user.updateNickname("after");
+
+		assertThat(user.getNickname()).isEqualTo("after");
+	}
 }

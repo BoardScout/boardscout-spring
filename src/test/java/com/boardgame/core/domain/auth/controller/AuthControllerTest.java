@@ -47,7 +47,7 @@ class AuthControllerTest {
 		given(authService.register(any(RegisterUserRequest.class)))
 			.willReturn(new UserResponse(1L, "player@example.com", "플레이어"));
 
-		mockMvc.perform(post("/api/core/auth/register")
+		mockMvc.perform(post("/api/v1/auth/register")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{
@@ -66,7 +66,7 @@ class AuthControllerTest {
 
 	@Test
 	void rejectsInvalidEmailAndMismatchedPassword() throws Exception {
-		mockMvc.perform(post("/api/core/auth/register")
+		mockMvc.perform(post("/api/v1/auth/register")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{
@@ -88,7 +88,7 @@ class AuthControllerTest {
 		given(authService.register(any(RegisterUserRequest.class)))
 			.willThrow(new BusinessException(AuthErrorCode.EMAIL_ALREADY_EXISTS));
 
-		mockMvc.perform(post("/api/core/auth/register")
+		mockMvc.perform(post("/api/v1/auth/register")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{
@@ -115,7 +115,7 @@ class AuthControllerTest {
 				.path("/")
 				.build());
 
-		mockMvc.perform(post("/api/core/auth/login")
+		mockMvc.perform(post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{
@@ -132,7 +132,7 @@ class AuthControllerTest {
 
 	@Test
 	void rejectsInvalidLoginRequest() throws Exception {
-		mockMvc.perform(post("/api/core/auth/login")
+		mockMvc.perform(post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{
@@ -150,7 +150,7 @@ class AuthControllerTest {
 		given(authService.login(any(LoginRequest.class)))
 			.willThrow(new BusinessException(AuthErrorCode.INVALID_CREDENTIALS));
 
-		mockMvc.perform(post("/api/core/auth/login")
+		mockMvc.perform(post("/api/v1/auth/login")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content("""
 					{

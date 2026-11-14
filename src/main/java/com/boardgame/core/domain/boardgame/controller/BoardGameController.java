@@ -14,7 +14,7 @@ import com.boardgame.core.global.exception.CommonErrorCode;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/core/board-games")
+@RequestMapping("/api/v1/board-games")
 @RequiredArgsConstructor
 public class BoardGameController {
 

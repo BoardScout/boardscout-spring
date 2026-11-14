@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.lenient;
 
 import com.boardgame.core.domain.user.entity.User;
 import com.boardgame.core.global.config.AuthSessionProperties;
@@ -32,7 +33,7 @@ class RedisSessionServiceTest {
 
 	@BeforeEach
 	void setUp() {
-		given(redisTemplate.opsForValue()).willReturn(valueOperations);
+		lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 		AuthSessionProperties properties = new AuthSessionProperties("BGSESSION", Duration.ofMinutes(30), false);
 		redisSessionService = new RedisSessionService(redisTemplate, new ObjectMapper(), properties);
 	}
@@ -66,10 +67,20 @@ class RedisSessionServiceTest {
 		var principal = redisSessionService.findAndRefresh(sessionId);
 
 		assertThat(principal).isPresent();
+		assertThat(principal.orElseThrow().sessionId()).isEqualTo(sessionId);
 		assertThat(principal.orElseThrow().userId()).isEqualTo(1L);
 		assertThat(principal.orElseThrow().email()).isEqualTo("player@example.com");
 		verify(redisTemplate).expire("session:" + sessionId, Duration.ofMinutes(30));
 		assertThat(principal.orElseThrow().role()).isEqualTo("USER");
 		verify(redisTemplate).expire("session:" + sessionId, Duration.ofMinutes(30));
+	}
+
+	@Test
+	void deletesValidSession() {
+		String sessionId = "a".repeat(43);
+
+		redisSessionService.delete(sessionId);
+
+		verify(redisTemplate).delete("session:" + sessionId);
 	}
 }

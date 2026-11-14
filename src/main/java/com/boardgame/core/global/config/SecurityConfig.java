@@ -52,7 +52,7 @@ public class SecurityConfig {
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.csrf(csrf -> csrf
 				.csrfTokenRepository(csrfTokenRepository)
-				.ignoringRequestMatchers("/api/core/auth/register", "/api/core/auth/login"))
+				.ignoringRequestMatchers("/api/v1/auth/register", "/api/v1/auth/login"))
 			// 폼 로그인·Basic 인증·기본 로그아웃 대신 JSON API와 커스텀 Redis 세션 방식을 사용합니다.
 			.requestCache(requestCache -> requestCache.disable())
 			.formLogin(formLogin -> formLogin.disable())
@@ -60,9 +60,9 @@ public class SecurityConfig {
 			.logout(logout -> logout.disable())
 			// 인증 진입점과 상태 확인은 공개하고, 나머지 core API는 유효한 세션이 있어야 통과시킵니다.
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/api/core/auth/**", "/api/core/health", "/actuator/health").permitAll()
-				.requestMatchers(HttpMethod.GET, "/api/core/board-games/**").permitAll()
-				.requestMatchers("/api/core/**").authenticated()
+				.requestMatchers("/api/v1/auth/**", "/api/v1/health", "/actuator/health").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/v1/board-games/**").permitAll()
+				.requestMatchers("/api/v1/**").authenticated()
 				.anyRequest().permitAll())
 			// 인증되지 않은 보호 API 요청도 나머지 API와 같은 공통 오류 형식으로 반환합니다.
 			.exceptionHandling(exceptions -> exceptions.authenticationEntryPoint((request, response, exception) -> {

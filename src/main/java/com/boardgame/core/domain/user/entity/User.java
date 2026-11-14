@@ -55,6 +55,11 @@ public class User {
 		return new User(email, passwordHash, nickname);
 	}
 
+	// 회원이 마이페이지에서 바꿀 수 있는 최소 정보인 닉네임만 수정합니다.
+	public void updateNickname(String nickname) {
+		this.nickname = requireText(nickname, "nickname", 50);
+	}
+
 	// 필수 문자열이 비어 있거나 데이터베이스 컬럼 길이를 넘는지 확인합니다.
 	private static String requireText(String value, String fieldName, int maxLength) {
 		if (value == null || value.isBlank() || value.length() > maxLength) {

@@ -47,7 +47,7 @@ class SecurityConfigTest {
 
 	@Test
 	void allowsPublicHealthEndpoint() throws Exception {
-		mockMvc.perform(get("/api/core/health"))
+		mockMvc.perform(get("/api/v1/health"))
 			.andExpect(status().isOk());
 	}
 
@@ -56,7 +56,7 @@ class SecurityConfigTest {
 		given(boardGameQueryService.search("팬데믹", 0, 20))
 			.willReturn(new BoardGameSearchResult(List.of(), 0, 20, 0, 0));
 
-		mockMvc.perform(get("/api/core/board-games").param("query", "팬데믹"))
+		mockMvc.perform(get("/api/v1/board-games").param("query", "팬데믹"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.result.items").isArray());
 	}
@@ -66,7 +66,7 @@ class SecurityConfigTest {
 		given(boardGameQueryService.searchAfter("", null, 24))
 			.willReturn(new BoardGameCursorResult(List.of(), null, false));
 
-		mockMvc.perform(get("/api/core/board-games/cursor"))
+		mockMvc.perform(get("/api/v1/board-games/cursor"))
 			.andExpect(status().isOk())
 			.andExpect(jsonPath("$.result.items").isArray())
 			.andExpect(jsonPath("$.result.hasNext").value(false));
@@ -74,7 +74,7 @@ class SecurityConfigTest {
 
 	@Test
 	void rejectsUnauthenticatedCoreEndpoint() throws Exception {
-		mockMvc.perform(get("/api/core/users/me"))
+		mockMvc.perform(get("/api/v1/users/me"))
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.success").value(false))
 			.andExpect(jsonPath("$.code").value("COMMON-401"));

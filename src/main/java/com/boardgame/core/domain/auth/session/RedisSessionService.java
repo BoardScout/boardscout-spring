@@ -63,11 +63,18 @@ public class RedisSessionService {
 			// 인증에 성공한 요청은 Redis 만료 시간을 다시 늘리는 슬라이딩 TTL을 적용합니다.
 			redisTemplate.expire(key, properties.ttl());
 			return Optional.of(new SessionPrincipal(
-				data.userId(), data.email(), data.nickname(), data.role()));
+				sessionId, data.userId(), data.email(), data.nickname(), data.role()));
 		} catch (RuntimeException exception) {
 			// 계약과 다른 손상된 JSON은 인증에 사용하지 않고 즉시 제거합니다.
 			redisTemplate.delete(key);
 			return Optional.empty();
+		}
+	}
+
+	public void delete(String sessionId) {
+		// 로그아웃이나 회원 탈퇴가 끝나면 현재 세션을 즉시 사용할 수 없게 만듭니다.
+		if (sessionId != null && sessionId.matches("[A-Za-z0-9_-]{43}")) {
+			redisTemplate.delete(SESSION_KEY_PREFIX + sessionId);
 		}
 	}
 

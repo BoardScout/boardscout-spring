@@ -20,7 +20,7 @@ USER spring
 
 EXPOSE 8080
 HEALTHCHECK --interval=10s --timeout=3s --start-period=20s --retries=5 \
-    CMD curl --fail --silent http://127.0.0.1:8080/api/core/health > /dev/null || exit 1
+    CMD curl --fail --silent http://127.0.0.1:8080/api/v1/health > /dev/null || exit 1
 
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]
 

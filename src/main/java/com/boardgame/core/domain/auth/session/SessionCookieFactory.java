@@ -22,4 +22,15 @@ public class SessionCookieFactory {
 			.maxAge(properties.ttl())
 			.build();
 	}
+
+	public ResponseCookie expire() {
+		// 브라우저에 같은 이름과 경로의 빈 쿠키를 내려 현재 로그인 쿠키를 제거합니다.
+		return ResponseCookie.from(properties.cookieName(), "")
+			.httpOnly(true)
+			.secure(properties.secureCookie())
+			.sameSite("Lax")
+			.path("/")
+			.maxAge(0)
+			.build();
+	}
 }

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 입력 검증과 응답 쿠키 처리를 담당하고 실제 계정·세션 로직은 AuthService에 위임합니다.
  */
 @RestController
-@RequestMapping("/api/core/auth")
+@RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
