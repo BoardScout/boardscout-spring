@@ -42,6 +42,7 @@ class BoardGameQueryServiceTest {
 
 		assertEquals("Pandemic", result.items().getFirst().nameEn());
 		assertEquals("팬데믹", result.items().getFirst().nameKo());
+		assertEquals(0, result.items().getFirst().datasetItemId());
 		verify(boardGameRepository).findByNameContainingIgnoreCaseOrNameKoContainingIgnoreCase(
 			eq("팬데믹"), eq("팬데믹"), any(Pageable.class));
 	}

@@ -6,6 +6,7 @@ import com.boardgame.core.domain.boardgame.entity.BoardGame;
 
 public record BoardGameSearchItem(
 	Long id,
+	Integer datasetItemId,
 	Long bggId,
 	String nameEn,
 	String nameKo,
@@ -25,8 +26,8 @@ public record BoardGameSearchItem(
 
 	public static BoardGameSearchItem from(BoardGame game) {
 		return new BoardGameSearchItem(
-			game.getId(), game.getBggId(), game.getName(), game.getNameKo(), game.getDescription(),
-			game.getImageUrl(), game.getThumbnailUrl(), game.getCategory(), game.getMinPlayers(),
+			game.getId(), game.getDatasetItemId(), game.getBggId(), game.getName(), game.getNameKo(),
+			game.getDescription(), game.getImageUrl(), game.getThumbnailUrl(), game.getCategory(), game.getMinPlayers(),
 			game.getMaxPlayers(), game.getMinPlayTimeMinutes(), game.getMaxPlayTimeMinutes(),
 			game.getMinAge(), game.getYearPublished(), game.getDifficulty(), game.getAverageRating());
 	}

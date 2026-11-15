@@ -15,7 +15,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import tools.jackson.databind.ObjectMapper;
 
 /**
@@ -43,16 +42,12 @@ public class SecurityConfig {
 		HttpSecurity http,
 		RedisSessionAuthenticationFilter redisSessionAuthenticationFilter
 	) throws Exception {
-		// 상태를 바꾸는 보호 API에서는 프런트가 읽을 수 있는 XSRF-TOKEN 쿠키 값을 헤더로 되돌려 보내야 합니다.
-		// 로그인과 회원가입은 아직 인증 쿠키가 없는 진입점이므로 CSRF 검사 대상에서 제외합니다.
-		CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
-
 		http
 			// 인증 상태는 Redis가 소유하므로 Spring의 HttpSession은 생성하지 않습니다.
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-			.csrf(csrf -> csrf
-				.csrfTokenRepository(csrfTokenRepository)
-				.ignoringRequestMatchers("/api/v1/auth/register", "/api/v1/auth/login"))
+			// Spring Security의 SPA 설정이 XSRF-TOKEN 쿠키 발급, 지연 토큰 로딩,
+			// BREACH 보호 토큰과 프런트가 보내는 평문 쿠키 토큰 검증을 함께 처리합니다.
+			.csrf(csrf -> csrf.spa())
 			// 폼 로그인·Basic 인증·기본 로그아웃 대신 JSON API와 커스텀 Redis 세션 방식을 사용합니다.
 			.requestCache(requestCache -> requestCache.disable())
 			.formLogin(formLogin -> formLogin.disable())

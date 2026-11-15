@@ -2,6 +2,7 @@ package com.boardgame.core.domain.auth.controller;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
@@ -12,7 +13,9 @@ import com.boardgame.core.domain.auth.dto.LoginRequest;
 import com.boardgame.core.domain.auth.dto.LoginResult;
 import com.boardgame.core.domain.auth.dto.RegisterUserRequest;
 import com.boardgame.core.domain.auth.exception.AuthErrorCode;
+import com.boardgame.core.domain.auth.security.SessionPrincipal;
 import com.boardgame.core.domain.auth.service.AuthService;
+import com.boardgame.core.domain.auth.session.RedisSessionService;
 import com.boardgame.core.domain.auth.session.SessionCookieFactory;
 import com.boardgame.core.domain.user.dto.UserResponse;
 import com.boardgame.core.global.exception.BusinessException;
@@ -25,6 +28,8 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -41,6 +46,9 @@ class AuthControllerTest {
 
 	@MockitoBean
 	private SessionCookieFactory sessionCookieFactory;
+
+	@MockitoBean
+	private RedisSessionService redisSessionService;
 
 	@Test
 	void registersUser() throws Exception {
@@ -161,5 +169,29 @@ class AuthControllerTest {
 			.andExpect(status().isUnauthorized())
 			.andExpect(jsonPath("$.code").value("USER-401-001"))
 			.andExpect(jsonPath("$.message").value("이메일 또는 비밀번호가 올바르지 않습니다."));
+	}
+
+	@Test
+	void logsOutAndExpiresSharedSessionCookie() throws Exception {
+		String sessionId = "a".repeat(43);
+		SessionPrincipal principal = new SessionPrincipal(
+			sessionId, 1L, "player@example.com", "플레이어", "USER");
+		var authentication = UsernamePasswordAuthenticationToken.authenticated(
+			principal, null, java.util.List.of());
+		given(sessionCookieFactory.expire()).willReturn(
+			ResponseCookie.from("BGSESSION", "").path("/").maxAge(0).build());
+
+		// 인증 필터가 Redis 세션에서 복원한 principal이 있는 요청을 재현합니다.
+		SecurityContextHolder.getContext().setAuthentication(authentication);
+		try {
+			mockMvc.perform(post("/api/v1/auth/logout"))
+				.andExpect(status().isNoContent())
+				.andExpect(header().string("Set-Cookie", containsString("BGSESSION=")))
+				.andExpect(header().string("Set-Cookie", containsString("Max-Age=0")));
+		} finally {
+			SecurityContextHolder.clearContext();
+		}
+
+		verify(redisSessionService).delete(sessionId);
 	}
 }
