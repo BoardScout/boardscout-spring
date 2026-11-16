@@ -7,10 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.boardgame.core.domain.boardgame.entity.BoardGame;
 
 public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
+
+	Optional<BoardGame> findByDatasetItemId(Integer datasetItemId);
 
 	Page<BoardGame> findByNameContainingIgnoreCaseOrNameKoContainingIgnoreCase(
 		String nameEn, String nameKo, Pageable pageable);
