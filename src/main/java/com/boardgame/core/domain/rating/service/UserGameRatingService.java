@@ -62,6 +62,7 @@ public class UserGameRatingService {
 	}
 
 	private BoardGame findDatasetGame(Integer datasetItemId) {
+		// 추천 API와 별점 API가 같은 게임을 가리키도록 추천 데이터셋의 ID로 조회한다.
 		return boardGameRepository.findByDatasetItemId(datasetItemId)
 			.orElseThrow(() -> new BusinessException(RatingErrorCode.DATASET_GAME_NOT_FOUND));
 	}
