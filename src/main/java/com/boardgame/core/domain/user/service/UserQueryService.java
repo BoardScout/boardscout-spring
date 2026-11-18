@@ -14,6 +14,7 @@ public class UserQueryService {
 
 	private final UserRepository userRepository;
 
+	// 회원 ID로 사용자 정보를 조회합니다.
 	@Transactional(readOnly = true)
 	public UserResponse getById(Long userId) {
 		// 세션의 사용자 ID로 DB를 다시 조회해 탈퇴했거나 없는 계정을 걸러냅니다.

@@ -24,6 +24,7 @@ public record RegisterUserRequest(
 	String passwordConfirm
 ) {
 
+	// 비밀번호와 비밀번호 확인 입력이 서로 같은지 검증합니다.
 	@JsonIgnore
 	@AssertTrue(message = "비밀번호가 서로 다릅니다.")
 	public boolean isPasswordConfirmed() {

@@ -21,6 +21,7 @@ public class UserPreferenceController {
 
 	private final UserPreferenceService userPreferenceService;
 
+	// 로그인한 회원의 추천 취향을 저장하거나 덮어씁니다.
 	@PutMapping("/users/me/preferences")
 	public UserPreferenceResponse saveMyPreferences(
 		@AuthenticationPrincipal SessionPrincipal principal,
@@ -29,6 +30,7 @@ public class UserPreferenceController {
 		return userPreferenceService.save(principal.userId(), request);
 	}
 
+	// 로그인한 회원이 저장해 둔 추천 취향을 조회합니다.
 	@GetMapping("/users/me/preferences")
 	public UserPreferenceResponse getMyPreferences(
 		@AuthenticationPrincipal SessionPrincipal principal
@@ -36,6 +38,7 @@ public class UserPreferenceController {
 		return userPreferenceService.get(principal.userId());
 	}
 
+	// 추천 서버가 회원 ID로 저장된 취향을 조회할 때 사용하는 내부용 API입니다.
 	@GetMapping("/internal/users/{userId}/preferences")
 	public UserPreferenceResponse getPreferencesForRecommendation(@PathVariable Long userId) {
 		return userPreferenceService.get(userId);

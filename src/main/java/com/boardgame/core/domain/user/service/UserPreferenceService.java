@@ -19,6 +19,7 @@ public class UserPreferenceService {
 	private final UserRepository userRepository;
 	private final UserPreferenceRepository userPreferenceRepository;
 
+	// 회원의 취향이 없으면 새로 만들고, 있으면 요청 내용으로 덮어써 저장합니다.
 	@Transactional
 	public UserPreferenceResponse save(Long userId, UserPreferenceRequest request) {
 		User user = userRepository.findById(userId)
@@ -38,6 +39,7 @@ public class UserPreferenceService {
 		return UserPreferenceResponse.from(userPreferenceRepository.save(preference));
 	}
 
+	// 저장된 취향을 조회합니다. 저장된 값이 없으면 오류로 처리합니다.
 	@Transactional(readOnly = true)
 	public UserPreferenceResponse get(Long userId) {
 		return userPreferenceRepository.findById(userId)

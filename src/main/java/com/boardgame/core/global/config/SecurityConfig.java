@@ -37,6 +37,7 @@ public class SecurityConfig {
 		return new RedisSessionAuthenticationFilter(redisSessionService, sessionProperties);
 	}
 
+	// 세션 기반 인증, CSRF 보호, 경로별 접근 권한을 설정한 보안 필터 체인을 구성합니다.
 	@Bean
 	SecurityFilterChain securityFilterChain(
 		HttpSecurity http,

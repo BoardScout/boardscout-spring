@@ -16,6 +16,7 @@ public record UserPreferenceResponse(
 	List<PreferencePlayStyle> playStyles,
 	List<Long> likedGameIds
 ) {
+	// 취향 엔티티를 응답으로 변환하며 목록은 복사본으로 내보냅니다.
 	public static UserPreferenceResponse from(UserPreference preference) {
 		return new UserPreferenceResponse(
 			preference.getRecommendationMode(),

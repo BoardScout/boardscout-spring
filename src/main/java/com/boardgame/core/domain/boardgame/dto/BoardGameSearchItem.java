@@ -24,6 +24,7 @@ public record BoardGameSearchItem(
 	BigDecimal averageRating
 ) {
 
+	// 보드게임 엔티티에서 검색 결과 한 건에 필요한 필드만 응답으로 옮깁니다.
 	public static BoardGameSearchItem from(BoardGame game) {
 		return new BoardGameSearchItem(
 			game.getId(), game.getDatasetItemId(), game.getBggId(), game.getName(), game.getNameKo(),

@@ -16,6 +16,7 @@ public class UserCommandService {
 
 	private final UserRepository userRepository;
 
+	// 로그인한 회원의 닉네임을 수정합니다.
 	@Transactional
 	public UserResponse update(Long userId, UpdateUserRequest request) {
 		// 1. 인증된 사용자 ID로 수정 대상 엔티티를 조회합니다.
@@ -28,6 +29,7 @@ public class UserCommandService {
 		return UserResponse.from(user);
 	}
 
+	// 회원 정보를 삭제합니다. 없는 회원이면 오류로 처리합니다.
 	@Transactional
 	public void delete(Long userId) {
 		// 1. 없는 회원 탈퇴를 성공처럼 처리하지 않도록 먼저 조회합니다.
@@ -37,6 +39,7 @@ public class UserCommandService {
 		userRepository.delete(user);
 	}
 
+	// 회원 ID로 사용자를 조회하고 없으면 오류를 던집니다.
 	private User getUser(Long userId) {
 		return userRepository.findById(userId)
 			.orElseThrow(() -> new BusinessException(UserErrorCode.USER_NOT_FOUND));

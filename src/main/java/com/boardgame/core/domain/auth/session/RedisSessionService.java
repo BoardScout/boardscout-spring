@@ -30,6 +30,7 @@ public class RedisSessionService {
 	private final AuthSessionProperties properties;
 	private final SecureRandom secureRandom = new SecureRandom();
 
+	// 사용자 정보를 담은 새 세션을 Redis에 저장하고 쿠키에 담을 sessionId를 반환합니다.
 	public String create(User user) {
 		// 로그인할 때마다 예측하기 어려운 새 ID를 만들어 기존 쿠키 값과 분리합니다.
 		String sessionId = generateSessionId();
@@ -46,6 +47,7 @@ public class RedisSessionService {
 		return sessionId;
 	}
 
+	// sessionId로 세션을 조회해 사용자 정보로 복원하고 만료 시간을 연장합니다. 세션이 없거나 손상됐으면 빈 값을 반환합니다.
 	public Optional<SessionPrincipal> findAndRefresh(String sessionId) {
 		// 쿠키 입력을 먼저 제한해 임의 문자열로 Redis 키를 조회하지 않도록 합니다.
 		if (sessionId == null || !sessionId.matches("[A-Za-z0-9_-]{43}")) {
@@ -71,6 +73,7 @@ public class RedisSessionService {
 		}
 	}
 
+	// sessionId에 해당하는 Redis 세션을 삭제합니다.
 	public void delete(String sessionId) {
 		// 로그아웃이나 회원 탈퇴가 끝나면 현재 세션을 즉시 사용할 수 없게 만듭니다.
 		if (sessionId != null && sessionId.matches("[A-Za-z0-9_-]{43}")) {
@@ -78,6 +81,7 @@ public class RedisSessionService {
 		}
 	}
 
+	// SecureRandom 32바이트를 URL에 안전한 Base64 문자열(43자)로 인코딩해 세션 ID를 만듭니다.
 	private String generateSessionId() {
 		byte[] bytes = new byte[SESSION_ID_BYTES];
 		secureRandom.nextBytes(bytes);

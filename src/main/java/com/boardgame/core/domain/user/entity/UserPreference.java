@@ -68,14 +68,17 @@ public class UserPreference {
 	@Column(name = "game_id", nullable = false)
 	private List<Long> likedGameIds = new ArrayList<>();
 
+	// 회원과 1:1로 연결된 취향 엔티티를 생성합니다.
 	private UserPreference(User user) {
 		this.user = user;
 	}
 
+	// 저장된 취향이 없는 회원을 위해 비어 있는 취향 엔티티를 만듭니다.
 	public static UserPreference create(User user) {
 		return new UserPreference(user);
 	}
 
+	// 취향 값 전체를 요청 내용으로 교체합니다. 목록은 비운 뒤 다시 채워 이전 항목이 남지 않게 합니다.
 	public void update(
 		RecommendationMode recommendationMode,
 		Integer playerCount,

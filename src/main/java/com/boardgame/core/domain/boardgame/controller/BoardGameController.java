@@ -21,6 +21,7 @@ public class BoardGameController {
 	private final BoardGameCommandService boardGameCommandService;
 	private final BoardGameQueryService boardGameQueryService;
 
+	// 이름으로 보드게임을 검색해 페이지 단위로 반환합니다. 페이지 번호, 크기(최대 50), 검색어 길이(최대 100자)를 먼저 확인합니다.
 	@GetMapping
 	public BoardGameSearchResult search(
 		@RequestParam(defaultValue = "") String query,
@@ -33,6 +34,7 @@ public class BoardGameController {
 		return boardGameQueryService.search(query, page, size);
 	}
 
+	// 커서 방식으로 다음 보드게임 목록을 반환합니다. 커서와 크기, 검색어 길이가 허용 범위를 벗어나면 400 오류로 처리합니다.
 	@GetMapping("/cursor")
 	public BoardGameCursorResult searchAfter(
 		@RequestParam(defaultValue = "") String query,

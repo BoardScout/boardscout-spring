@@ -32,12 +32,14 @@ public class UserController {
 	private final RedisSessionService redisSessionService;
 	private final SessionCookieFactory sessionCookieFactory;
 
+	// 현재 로그인한 회원의 정보를 조회합니다.
 	@GetMapping("/me")
 	public UserResponse getMe(@AuthenticationPrincipal SessionPrincipal principal) {
 		// 1. 인증 필터가 Redis 세션에서 복원한 사용자 ID를 서비스로 전달합니다.
 		return userQueryService.getById(principal.userId());
 	}
 
+	// 현재 로그인한 회원의 닉네임을 수정합니다.
 	@PatchMapping("/me")
 	public UserResponse updateMe(
 		@AuthenticationPrincipal SessionPrincipal principal,
@@ -47,6 +49,7 @@ public class UserController {
 		return userCommandService.update(principal.userId(), request);
 	}
 
+	// 현재 로그인한 회원을 탈퇴 처리하고 세션과 쿠키까지 정리합니다.
 	@DeleteMapping("/me")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteMe(

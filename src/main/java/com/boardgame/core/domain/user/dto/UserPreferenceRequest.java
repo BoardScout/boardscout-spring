@@ -32,18 +32,21 @@ public record UserPreferenceRequest(
 	@Size(max = 20, message = "좋아한 게임은 20개 이하로 선택해 주세요.")
 	List<@PositiveOrZero(message = "게임 ID는 0 이상이어야 합니다.") Long> likedGameIds
 ) {
+	// 목록 필드가 비어 있으면 빈 목록으로, 있으면 복사본으로 바꿔 불변 상태로 보관합니다.
 	public UserPreferenceRequest {
 		themes = themes == null ? List.of() : List.copyOf(themes);
 		playStyles = playStyles == null ? List.of() : List.copyOf(playStyles);
 		likedGameIds = likedGameIds == null ? List.of() : List.copyOf(likedGameIds);
 	}
 
+	// 상황 추천 모드에서는 인원, 플레이 시간, 난이도가 모두 입력됐는지 확인합니다.
 	@AssertTrue(message = "상황 추천에는 인원, 플레이 시간, 난이도가 필요합니다.")
 	public boolean isContextPreferenceComplete() {
 		return recommendationMode != RecommendationMode.CONTEXT
 			|| (playerCount != null && maxPlayTime != null && difficulty != null);
 	}
 
+	// 취향 추천 모드에서는 중복 없는 게임이 3개 이상 선택됐는지 확인합니다.
 	@AssertTrue(message = "취향 추천에는 서로 다른 게임을 3개 이상 선택해야 합니다.")
 	public boolean isTastePreferenceComplete() {
 		return recommendationMode != RecommendationMode.TASTE

@@ -27,6 +27,7 @@ public class RedisSessionAuthenticationFilter extends OncePerRequestFilter {
 	private final RedisSessionService redisSessionService;
 	private final AuthSessionProperties sessionProperties;
 
+	// 요청에 담긴 세션 쿠키로 인증을 시도하고, 결과와 관계없이 다음 필터로 요청을 넘깁니다.
 	@Override
 	protected void doFilterInternal(
 		HttpServletRequest request,
@@ -44,6 +45,7 @@ public class RedisSessionAuthenticationFilter extends OncePerRequestFilter {
 		filterChain.doFilter(request, response);
 	}
 
+	// 세션에서 복원한 사용자 정보를 현재 요청의 SecurityContext에 인증 완료 상태로 등록합니다.
 	private void authenticate(SessionPrincipal principal) {
 		// Redis에 저장된 역할을 Spring Security 권한 규칙(ROLE_*)으로 변환합니다.
 		var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + principal.role()));

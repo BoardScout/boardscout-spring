@@ -18,6 +18,7 @@ public class BoardGameQueryService {
 
 	private final BoardGameRepository boardGameRepository;
 
+	// 검색어가 없으면 전체, 있으면 이름이 일치하는 보드게임을 이름순 페이지로 조회합니다.
 	public BoardGameSearchResult search(String query, int page, int size) {
 		String keyword = query == null ? "" : query.strip();
 		PageRequest pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "name"));
@@ -28,6 +29,7 @@ public class BoardGameQueryService {
 		return BoardGameSearchResult.from(result);
 	}
 
+	// 마지막으로 받은 id 이후의 게임을 조회합니다. size보다 한 건 더 읽어 다음 페이지가 있는지 판단합니다.
 	public BoardGameCursorResult searchAfter(String query, Long cursor, int size) {
 		String keyword = query == null ? "" : query.strip();
 		long normalizedCursor = cursor == null ? 0L : cursor;

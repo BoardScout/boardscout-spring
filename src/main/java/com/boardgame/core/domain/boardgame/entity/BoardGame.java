@@ -208,6 +208,7 @@ public class BoardGame {
 		return value;
 	}
 
+	// 값이 있을 때만 필수 문자열과 같은 기준으로 검증하고, 없으면 null을 그대로 돌려줍니다.
 	private static String optionalText(String value, String field, int maxLength) {
 		if (value == null) {
 			return null;

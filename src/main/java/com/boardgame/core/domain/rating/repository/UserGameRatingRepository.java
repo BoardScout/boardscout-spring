@@ -11,7 +11,9 @@ import com.boardgame.core.domain.user.entity.User;
 
 public interface UserGameRatingRepository extends JpaRepository<UserGameRating, Long> {
 
+	// 사용자가 해당 게임에 남긴 별점을 조회합니다.
 	Optional<UserGameRating> findByUserAndBoardGame(User user, BoardGame boardGame);
 
+	// 사용자가 남긴 별점 전체를 최근 수정한 순서대로 조회합니다.
 	List<UserGameRating> findAllByUserIdOrderByUpdatedAtDesc(Long userId);
 }

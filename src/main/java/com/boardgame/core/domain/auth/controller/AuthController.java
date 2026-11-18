@@ -33,6 +33,7 @@ public class AuthController {
 	private final RedisSessionService redisSessionService;
 	private final SessionCookieFactory sessionCookieFactory;
 
+	// 이메일 회원가입 요청을 받아 새 계정을 만들고 가입한 사용자 정보를 201로 응답합니다.
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserResponse register(@Valid @RequestBody RegisterUserRequest request) {
@@ -40,6 +41,7 @@ public class AuthController {
 		return authService.register(request);
 	}
 
+	// 이메일과 비밀번호를 확인한 뒤 세션 쿠키를 내려 주고 로그인한 사용자 정보를 응답합니다.
 	@PostMapping("/login")
 	public UserResponse login(@Valid @RequestBody LoginRequest request, HttpServletResponse response) {
 		// 자격 증명이 맞으면 서비스가 Redis 세션을 만들고 새 sessionId를 반환합니다.
@@ -49,6 +51,7 @@ public class AuthController {
 		return result.user();
 	}
 
+	// 현재 로그인 세션을 종료하고 브라우저의 세션 쿠키를 만료시킵니다.
 	@PostMapping("/logout")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void logout(

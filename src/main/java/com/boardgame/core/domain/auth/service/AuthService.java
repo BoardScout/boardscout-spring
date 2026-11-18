@@ -32,6 +32,7 @@ public class AuthService {
 	private final PasswordEncoder passwordEncoder;
 	private final RedisSessionService redisSessionService;
 
+	// 이메일 중복을 확인하고 비밀번호를 해시한 뒤 새 일반 사용자를 저장합니다.
 	@Transactional
 	public UserResponse register(RegisterUserRequest request) {
 		// 저장과 조회가 같은 식별자를 사용하도록 이메일과 닉네임의 불필요한 공백을 정리합니다.
@@ -52,6 +53,7 @@ public class AuthService {
 		}
 	}
 
+	// 이메일과 비밀번호를 검증하고 통과하면 Redis 세션을 발급합니다.
 	@Transactional(readOnly = true)
 	public LoginResult login(LoginRequest request) {
 		String email = request.email().strip().toLowerCase(Locale.ROOT);

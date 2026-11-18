@@ -58,12 +58,14 @@ public class UserGameRating {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
+	// 생성 시점에도 update와 같은 점수 범위 검증을 거치도록 위임합니다.
 	private UserGameRating(User user, BoardGame boardGame, BigDecimal rating) {
 		this.user = user;
 		this.boardGame = boardGame;
 		update(rating);
 	}
 
+	// 사용자와 추천 데이터셋에 속한 게임을 연결해 별점을 새로 만듭니다.
 	public static UserGameRating create(User user, BoardGame boardGame, BigDecimal rating) {
 		if (user == null || boardGame == null) {
 			throw new IllegalArgumentException("user and boardGame are required");
@@ -74,6 +76,7 @@ public class UserGameRating {
 		return new UserGameRating(user, boardGame, rating);
 	}
 
+	// 별점이 1~10 범위 안에 있는지 검증한 뒤 반영합니다.
 	public void update(BigDecimal rating) {
 		if (rating == null
 			|| rating.compareTo(BigDecimal.ONE) < 0

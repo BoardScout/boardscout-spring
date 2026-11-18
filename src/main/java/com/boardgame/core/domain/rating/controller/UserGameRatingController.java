@@ -26,6 +26,7 @@ public class UserGameRatingController {
 
 	private final UserGameRatingService ratingService;
 
+	// 로그인한 사용자가 남긴 별점 전체를 조회합니다.
 	@GetMapping
 	public List<UserGameRatingResponse> getAll(
 		@AuthenticationPrincipal SessionPrincipal principal
@@ -33,6 +34,7 @@ public class UserGameRatingController {
 		return ratingService.getAll(principal.userId());
 	}
 
+	// 데이터셋 게임 하나에 대한 별점을 등록하거나 수정합니다.
 	@PutMapping("/{datasetItemId}")
 	public UserGameRatingResponse save(
 		@AuthenticationPrincipal SessionPrincipal principal,
@@ -42,6 +44,7 @@ public class UserGameRatingController {
 		return ratingService.save(principal.userId(), datasetItemId, request);
 	}
 
+	// 데이터셋 게임 하나에 대한 별점을 삭제합니다.
 	@DeleteMapping("/{datasetItemId}")
 	public void delete(
 		@AuthenticationPrincipal SessionPrincipal principal,
