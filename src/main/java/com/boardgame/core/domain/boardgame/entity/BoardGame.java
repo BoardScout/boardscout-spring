@@ -64,6 +64,10 @@ public class BoardGame {
 	@Column(nullable = false, length = 50)
 	private String category;
 
+	// 쉼표로 이어 저장한 테마 코드입니다(예: "strategy,mystery"). 없으면 null입니다.
+	@Column(length = 100)
+	private String themes;
+
 	@Column(name = "min_players", nullable = false)
 	private int minPlayers;
 
