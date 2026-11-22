@@ -10,22 +10,22 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({"success", "code", "message", "result"})
 public record ApiResponse<T>(
-        boolean success,
-        String code,
-        String message,
-        T result
+		boolean success,
+		String code,
+		String message,
+		T result
 ) {
 
-    private static final String SUCCESS_CODE = "COMMON-200";
-    private static final String SUCCESS_MESSAGE = "요청에 성공했습니다.";
+	private static final String SUCCESS_CODE = "COMMON-200";
+	private static final String SUCCESS_MESSAGE = "요청에 성공했습니다.";
 
-    // 컨트롤러의 반환값을 성공 응답으로 만듭니다.
-    public static <T> ApiResponse<T> success(T result) {
-        return new ApiResponse<>(true, SUCCESS_CODE, SUCCESS_MESSAGE, result);
-    }
+	// 컨트롤러의 반환값을 성공 응답으로 만듭니다.
+	public static <T> ApiResponse<T> success(T result) {
+		return new ApiResponse<>(true, SUCCESS_CODE, SUCCESS_MESSAGE, result);
+	}
 
-    // 에러 코드와 상세 정보를 실패 응답으로 만듭니다.
-    public static <T> ApiResponse<T> failure(String code, String message, T result) {
-        return new ApiResponse<>(false, code, message, result);
-    }
+	// 에러 코드와 상세 정보를 실패 응답으로 만듭니다.
+	public static <T> ApiResponse<T> failure(String code, String message, T result) {
+		return new ApiResponse<>(false, code, message, result);
+	}
 }
