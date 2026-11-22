@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Base64;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import com.boardgame.core.domain.auth.security.SessionPrincipal;
 import com.boardgame.core.domain.user.entity.User;
@@ -24,6 +25,8 @@ public class RedisSessionService {
 
 	private static final String SESSION_KEY_PREFIX = "session:";
 	private static final int SESSION_ID_BYTES = 32;
+	// 32바이트를 패딩 없는 URL-safe Base64로 인코딩하면 43자가 됩니다. FastAPI도 같은 규칙으로 검증합니다.
+	private static final Pattern SESSION_ID_PATTERN = Pattern.compile("[A-Za-z0-9_-]{43}");
 
 	private final StringRedisTemplate redisTemplate;
 	private final ObjectMapper objectMapper;
@@ -50,7 +53,7 @@ public class RedisSessionService {
 	// sessionId로 세션을 조회해 사용자 정보로 복원하고 만료 시간을 연장합니다. 세션이 없거나 손상됐으면 빈 값을 반환합니다.
 	public Optional<SessionPrincipal> findAndRefresh(String sessionId) {
 		// 쿠키 입력을 먼저 제한해 임의 문자열로 Redis 키를 조회하지 않도록 합니다.
-		if (sessionId == null || !sessionId.matches("[A-Za-z0-9_-]{43}")) {
+		if (!isValidSessionId(sessionId)) {
 			return Optional.empty();
 		}
 
@@ -76,9 +79,13 @@ public class RedisSessionService {
 	// sessionId에 해당하는 Redis 세션을 삭제합니다.
 	public void delete(String sessionId) {
 		// 로그아웃이나 회원 탈퇴가 끝나면 현재 세션을 즉시 사용할 수 없게 만듭니다.
-		if (sessionId != null && sessionId.matches("[A-Za-z0-9_-]{43}")) {
+		if (isValidSessionId(sessionId)) {
 			redisTemplate.delete(SESSION_KEY_PREFIX + sessionId);
 		}
+	}
+
+	private static boolean isValidSessionId(String sessionId) {
+		return sessionId != null && SESSION_ID_PATTERN.matcher(sessionId).matches();
 	}
 
 	// SecureRandom 32바이트를 URL에 안전한 Base64 문자열(43자)로 인코딩해 세션 ID를 만듭니다.
