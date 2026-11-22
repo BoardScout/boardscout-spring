@@ -35,7 +35,6 @@ public class UserController {
 	// 현재 로그인한 회원의 정보를 조회합니다.
 	@GetMapping("/me")
 	public UserResponse getMe(@AuthenticationPrincipal SessionPrincipal principal) {
-		// 1. 인증 필터가 Redis 세션에서 복원한 사용자 ID를 서비스로 전달합니다.
 		return userQueryService.getById(principal.userId());
 	}
 
@@ -45,7 +44,6 @@ public class UserController {
 		@AuthenticationPrincipal SessionPrincipal principal,
 		@Valid @RequestBody UpdateUserRequest request
 	) {
-		// 1. 요청 DTO 검증 후 현재 로그인한 회원의 닉네임만 수정합니다.
 		return userCommandService.update(principal.userId(), request);
 	}
 

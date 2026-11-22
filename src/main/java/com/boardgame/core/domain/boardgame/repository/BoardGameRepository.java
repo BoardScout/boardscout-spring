@@ -20,6 +20,7 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 	Page<BoardGame> findByNameContainingIgnoreCaseOrNameKoContainingIgnoreCase(
 		String nameEn, String nameKo, Pageable pageable);
 
+	// 커서(마지막으로 받은 id)보다 큰 게임을 id 순으로 조회합니다. 검색어가 비어 있으면 전체를 대상으로 합니다.
 	@Query("""
 		select game from BoardGame game
 		where game.id > :cursor
@@ -30,7 +31,6 @@ public interface BoardGameRepository extends JpaRepository<BoardGame, Long> {
 		)
 		order by game.id asc
 		""")
-	// 커서(마지막으로 받은 id)보다 큰 게임을 id 순으로 조회합니다. 검색어가 비어 있으면 전체를 대상으로 합니다.
 	List<BoardGame> findNextByCursor(
 		@Param("cursor") long cursor,
 		@Param("keyword") String keyword,
