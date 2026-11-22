@@ -13,7 +13,6 @@ import com.boardgame.core.domain.auth.session.RedisSessionService;
 import com.boardgame.core.domain.boardgame.controller.BoardGameController;
 import com.boardgame.core.domain.boardgame.dto.BoardGameSearchResult;
 import com.boardgame.core.domain.boardgame.dto.BoardGameCursorResult;
-import com.boardgame.core.domain.boardgame.service.BoardGameCommandService;
 import com.boardgame.core.domain.boardgame.service.BoardGameQueryService;
 import com.boardgame.core.domain.user.controller.UserPreferenceController;
 import com.boardgame.core.domain.user.dto.UserPreferenceRequest;
@@ -47,9 +46,6 @@ class SecurityConfigTest {
 
 	@MockitoBean
 	private AuthSessionProperties sessionProperties;
-
-	@MockitoBean
-	private BoardGameCommandService boardGameCommandService;
 
 	@MockitoBean
 	private BoardGameQueryService boardGameQueryService;

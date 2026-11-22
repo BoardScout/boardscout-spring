@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.boardgame.core.domain.boardgame.dto.BoardGameSearchResult;
 import com.boardgame.core.domain.boardgame.dto.BoardGameCursorResult;
-import com.boardgame.core.domain.boardgame.service.BoardGameCommandService;
 import com.boardgame.core.domain.boardgame.service.BoardGameQueryService;
 import com.boardgame.core.global.exception.BusinessException;
 import com.boardgame.core.global.exception.CommonErrorCode;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BoardGameController {
 
-	private final BoardGameCommandService boardGameCommandService;
 	private final BoardGameQueryService boardGameQueryService;
 
 	// 이름으로 보드게임을 검색해 페이지 단위로 반환합니다. 페이지 번호, 크기(최대 50), 검색어 길이(최대 100자)를 먼저 확인합니다.
